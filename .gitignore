@@ -1,0 +1,27 @@
+# --- 課程規定不可上傳項目 ---
+# 不可包含資料集檔案 
+data/
+*.jpg
+*.jpeg
+*.png
+*.csv
+
+# 不可包含模型權重檔 
+*.pth
+checkpoints/
+checkpoints_resnet101_v1/
+
+# --- Python 編譯與環境 ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.env
+
+# --- 作業系統與工具 ---
+.DS_Store
+.ipynb_checkpoints/
+submission/
+*.zip
