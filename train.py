@@ -75,7 +75,9 @@ def build_dataloaders(
     train_dataset = datasets.ImageFolder(
         os.path.join(data_dir, "train"), transform=train_tf
     )
-    val_dataset = datasets.ImageFolder(os.path.join(data_dir, "val"), transform=val_tf)
+    val_dataset = datasets.ImageFolder(
+        os.path.join(data_dir, "val"), transform=val_tf
+    )
 
     train_loader = DataLoader(
         train_dataset,
@@ -142,11 +144,15 @@ class LabelSmoothingCrossEntropy(nn.Module):
         super().__init__()
         self.smoothing = smoothing
 
-    def forward(self, preds: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self, preds: torch.Tensor, targets: torch.Tensor
+    ) -> torch.Tensor:
         log_prob = nn.functional.log_softmax(preds, dim=1)
         loss = -log_prob.gather(dim=1, index=targets.unsqueeze(1)).squeeze(1)
         smooth_loss = -log_prob.mean(dim=1)
-        return ((1 - self.smoothing) * loss + self.smoothing * smooth_loss).mean()
+        return (
+            (1 - self.smoothing) * loss + self.smoothing * smooth_loss
+        ).mean()
 
 
 def mixup_data(x, y, alpha=0.2):  # 稍微調低 alpha 讓訓練更穩定
@@ -163,7 +169,9 @@ def mixup_criterion(criterion, pred, y_a, y_b, lam):
 # ─────────────────────────────────────────────
 # Training / Evaluation
 # ─────────────────────────────────────────────
-def train_one_epoch(model, loader, optimizer, criterion, device, use_mixup=True):
+def train_one_epoch(
+    model, loader, optimizer, criterion, device, use_mixup=True
+):
     model.train()
     total_loss, total = 0.0, 0
     for imgs, labels in tqdm(loader, desc="  Train", leave=False):
@@ -214,7 +222,9 @@ def main():
 
     # 建構 Model
     model = build_model(num_classes=100).to(device)
-    print(f"[INFO] Params: {sum(p.numel() for p in model.parameters()) / 1e6:.1f}M")
+    print(
+        f"[INFO] Params: {sum(p.numel() for p in model.parameters()) / 1e6:.1f}M"
+    )
 
     optimizer = optim.AdamW(
         model.parameters(), lr=3e-4, weight_decay=0.05
@@ -233,15 +243,21 @@ def main():
             for p in model.parameters():
                 p.requires_grad = True
 
-        train_loss = train_one_epoch(model, train_loader, optimizer, criterion, device)
+        train_loss = train_one_epoch(
+            model, train_loader, optimizer, criterion, device
+        )
         val_acc = evaluate(model, val_loader, criterion, device)
         scheduler.step()
 
-        print(f"Epoch {epoch:02d} | Loss: {train_loss:.4f} | Val Acc: {val_acc:.4f}")
+        print(
+            f"Epoch {epoch:02d} | Loss: {train_loss:.4f} | Val Acc: {val_acc:.4f}"
+        )
 
         if val_acc > best_acc:
             best_acc = val_acc
-            torch.save(model.state_dict(), os.path.join(save_dir, "best_model.pth"))
+            torch.save(
+                model.state_dict(), os.path.join(save_dir, "best_model.pth")
+            )
 
 
 if __name__ == "__main__":

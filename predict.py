@@ -34,7 +34,7 @@ class GeMPooling(nn.Module):
 
 
 def build_model(num_classes=100):
-    weights = models.ResNet101_Weights.IMAGENET1K_V2
+    # weights = models.ResNet101_Weights.IMAGENET1K_V2
     model = models.resnet101(weights=None)
     model.avgpool = GeMPooling(p=3.0)
     in_features = model.fc.in_features
@@ -90,7 +90,7 @@ def predict(model, img_paths, transforms_list, device, batch_size=16):
     model.eval()
     all_preds = []
     for i in tqdm(range(0, len(img_paths), batch_size), desc="Predicting"):
-        batch_paths = img_paths[i : i + batch_size]
+        batch_paths = img_paths[i: i + batch_size]
         images = [Image.open(p).convert("RGB") for p in batch_paths]
         logits_sum = None
         for tf in transforms_list:
